@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Submission - Stock Surge</title>
+    <link rel="stylesheet" href="base.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar-links">
+            <li><a href="home.html"><img src="logo.png" alt="Stock Surge Logo" class="logo" width="160px"></a></li>
+            <li><a href="trading.html">Trading</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="cash_management.html">Cash Management</a></li>
+        </ul>
+        <div class="navbar-right">
+            <a href="login.html" class="nav-link">Log on</a>
+            <a href="new_account.html" class="cta-button">Open an account</a>
+        </div>
+    </nav>
+
+    <div class="submission-container">
+        <h2>Transaction Summary</h2>
+
+        <!-- Transaction details section -->
+        <div class="transaction-details">
+            <p><strong>Transaction Type:</strong> <span id="transaction-type"></span></p>
+            <p><strong>Stock Ticker:</strong> <span id="stock-ticker"></span></p>
+            <p><strong>Number of Shares:</strong> <span id="num-shares"></span></p>
+        </div>
+
+        <!-- Confirmation message or error display -->
+        <div id="message" class="message"></div>
+
+        <!-- Back to Trading button -->
+        <div class="form-group">
+            <a href="trading.html" class="back-button">Back to Trading</a>
+        </div>
+    </div>
+
+    <script src="submit_trade.js"></script>
+</body>
+</html>

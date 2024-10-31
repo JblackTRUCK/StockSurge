@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Surge</title>
+    <link rel="stylesheet" href="base.css">
+</head>
+<body>
+    <nav class="navbar">
+  
+        <ul class="navbar-links">
+			<li><a href="home.html"><img src="logo.png" alt="Stock Surge Logo" class="logo" width="160px"></li>
+            <li><a href="trading.html">Trading</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="cash_management.html">Cash Management</a></li>
+        </ul>
+        <div class="navbar-right">
+            <a href="login.html" class="nav-link">Log on</a>
+            <a href="new_account.html" class="cta-button">Open an account</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="portfolio-section">
+            <h1>Your Portfolio</h1>
+            
+            <!-- Portfolio summary -->
+            <div class="portfolio-summary">
+                <h2>Account Summary</h2>
+                <p>Available Cash: <strong>$5,000.00</strong></p>
+            </div>
+
+            <!-- Portfolio table -->
+            <table class="portfolio-table">
+                <thead>
+                    <tr>
+                        <th>Stock Symbol</th>
+                        <th>Company Name</th>
+                        <th>Shares</th>
+                        <th>Current Price</th>
+                        <th>Total Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AAPL</td>
+                        <td>Apple Inc.</td>
+                        <td>10</td>
+                        <td>$150.00</td>
+                        <td>$1,500.00</td>
+                    </tr>
+                    <tr>
+                        <td>GOOGL</td>
+                        <td>Alphabet Inc.</td>
+                        <td>5</td>
+                        <td>$2,500.00</td>
+                        <td>$12,500.00</td>
+                    </tr>
+                    <tr>
+                        <td>TSLA</td>
+                        <td>Tesla Inc.</td>
+                        <td>8</td>
+                        <td>$750.00</td>
+                        <td>$6,000.00</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4"><strong>Total Portfolio Value</strong></td>
+                        <td><strong>$20,000.00</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </section>
+    </main>
+
+</body>
+</html>

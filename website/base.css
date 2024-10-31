@@ -1,0 +1,554 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    padding-top: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+
+/*nav bar styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 40px 20px 3px 150px;
+    border-bottom: 1px solid #ddd;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-links {
+    display: flex;
+    list-style: none;
+    justify-content: center;
+    flex-grow: 2;
+}
+
+.navbar-links li {
+    margin: 0 15px;
+}
+
+.navbar-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.navbar-links a:hover {
+    color: #0055ff;
+}
+
+/* Right section buttons */
+.navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-right .nav-link {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #333;
+}
+
+.navbar-right .nav-link:hover {
+    color: #0055ff;
+}
+
+.navbar-right .cta-button {
+    background-color: #0055ff;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.navbar-right .cta-button:hover {
+    background-color: #568eff;
+}
+
+
+
+
+/* Container styling for the columns */
+.container {
+    display: flex;
+    justify-content: center; /* Centers the columns horizontally */
+    gap: 40px; /* Adds space between the two columns */
+    margin: 20px;
+}
+
+/* Stock display and financial news */
+.stock-display, .financial-news {
+    background-color: #f9f9f9;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex-basis: auto; /* Automatically adjusts width based on content */
+    max-width: 400px; /* Limits how wide the boxes can grow */
+}
+
+/* Stock display box styling */
+.stock-display {
+    background-color: #f0f8ff;
+}
+
+.news-item {
+    margin-bottom: 10px;
+}
+
+
+
+
+/* trading page styling*/
+.trading-container {
+	max-width: 600px;
+	margin: 100px auto;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+.trading-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+	font-weight: bold;
+}
+
+input[type="text"],
+    input[type="number"] {
+    width: 100%;
+    padding: 10px;
+	border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.radio-group {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.radio-group label {
+    font-weight: normal;
+}
+
+.submit-btn {
+    display: block;
+    width: 100%;
+	padding: 10px;
+	background-color: #0055ff;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.submit-btn:hover {
+	background-color: #568eff;
+}
+
+
+
+
+/* login page styling */
+
+.login-container {
+	max-width: 400px;
+	margin: 100px auto;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.login-container label {
+	display: block;
+	margin-bottom: 8px;
+	font-weight: bold;
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+	width: 100%;
+	padding: 10px;
+	margin-bottom: 20px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	box-sizing: border-box;
+}
+
+.login-button {
+	width: 100%;
+	padding: 10px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.login-button:hover {
+	background-color: #0056b3;
+}
+
+.login-container p {
+	text-align: center;
+	padding-top: 12px;
+	font-size: 12px;
+}
+
+.login-container a {
+	color: #007bff;
+	text-decoration: none;
+}
+
+.login-container a:hover {
+	text-decoration: underline;
+}
+
+
+
+
+/* new account page styling */
+.account-container {
+	max-width: 400px;
+	margin: 100px auto;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.account-container h2 {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.account-container label {
+	display: block;
+	margin-bottom: 8px;
+	font-weight: bold;
+}
+
+.account-container input[type="text"],
+.account-container input[type="password"],
+.account-container input[type="email"] {
+	width: 100%;
+	padding: 10px;
+	margin-bottom: 20px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	box-sizing: border-box;
+}
+
+.create-account-button {
+	width: 100%;
+	padding: 10px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.create-account-button:hover {
+	background-color: #0056b3;
+}
+
+.account-container p {
+	text-align: center;
+	padding-top: 12px;
+	font-size: 12px;
+}
+
+.account-container a {
+	color: #007bff;
+	text-decoration: none;
+}
+
+.account-container a:hover {
+	text-decoration: underline;
+}
+
+
+
+/* Portfolio page styling*/
+.portfolio-section {
+    max-width: 1000px;
+    margin: 100px auto;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+.portfolio-section h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.portfolio-summary {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.portfolio-summary p {
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+/* Portfolio Table */
+.portfolio-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #fff;
+}
+
+.portfolio-table th, .portfolio-table td {
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.portfolio-table th {
+    background-color: #f0f8ff;
+    font-weight: bold;
+}
+
+.portfolio-table td {
+    text-align: center;
+}
+
+.portfolio-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.portfolio-table tfoot {
+    background-color: #f0f8ff;
+    font-weight: bold;
+}
+
+.portfolio-table tfoot td {
+    text-align: right;
+    padding-right: 20px;
+}
+
+
+
+
+/* Transaction history styling */
+.transaction-history {
+    max-width: 800px;
+    margin: 100px auto;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+.transaction-history h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.transaction-history table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transaction-history th, .transaction-history td {
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.transaction-history th {
+    background-color: #f0f8ff;
+    font-weight: bold;
+}
+
+.transaction-history td {
+    text-align: center;
+}
+
+.transaction-history tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Cash account styling */
+.cash-account {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.cash-account h2 {
+    margin-bottom: 10px;
+}
+
+.cash-account p {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Deposit and Withdraw Funds */
+.manage-funds {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+.manage-funds h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.manage-funds form {
+    margin-bottom: 20px;
+}
+
+.manage-funds label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.manage-funds input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.manage-funds button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #0055ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.manage-funds button:hover {
+    background-color: #568eff;
+}
+
+
+
+/* Aligning transaction history and fund management in columns */
+.transaction-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 100px auto;
+    gap: 40px;
+}
+
+/* Make both sections take up equal space */
+.transaction-history, .manage-funds {
+    flex-basis: 48%;
+}
+
+
+
+/* Submit Trade Page Styling */
+.submission-container {
+    max-width: 600px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    text-align: center;
+}
+
+.submission-container h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Transaction details styling */
+.transaction-details {
+    margin-bottom: 20px;
+}
+
+.transaction-details p {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Success and Error Messages */
+.message {
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Back Button */
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    color: white;
+    background-color: #0055ff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.back-button:hover {
+    background-color: #568eff;
+}

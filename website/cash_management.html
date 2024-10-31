@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Surge - Transactions</title>
+    <link rel="stylesheet" href="base.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar-links">
+            <li><a href="home.html"><img src="logo.png" alt="Stock Surge Logo" class="logo" width="160px"></li>
+            <li><a href="trading.html">Trading</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="cash_management.html">Cash Management</a></li>
+        </ul>
+        <div class="navbar-right">
+            <a href="login.html" class="nav-link">Log on</a>
+            <a href="new_account.html" class="cta-button">Open an account</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="transaction-container">
+            <section class="transaction-history">
+                <h2>Your Transaction History</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Transaction Type</th>
+                            <th>Amount</th>
+                            <th>Stock (if applicable)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example transaction history, this data would be populated dynamically -->
+                        <tr>
+                            <td>10/15/2024</td>
+                            <td>Deposit</td>
+                            <td>$1,000</td>
+                            <td>-</td>
+                            <td>Completed</td>
+                        </tr>
+                        <tr>
+                            <td>10/12/2024</td>
+                            <td>Buy</td>
+                            <td>$500</td>
+                            <td>TSLA</td>
+                            <td>Completed</td>
+                        </tr>
+                        <tr>
+                            <td>10/10/2024</td>
+                            <td>Sell</td>
+                            <td>$800</td>
+                            <td>APPL</td>
+                            <td>Completed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+    
+            <section class="manage-funds">
+                <h2>Deposit or Withdraw Funds</h2>
+    
+                <!-- Deposit Form -->
+                <form id="deposit-form">
+                    <h3>Deposit Cash</h3>
+                    <label for="deposit-amount">Amount to deposit:</label>
+                    <input type="number" id="deposit-amount" name="deposit-amount" min="1" required>
+                    <button type="submit">Deposit</button>
+                </form>
+    
+                <!-- Withdrawal Form -->
+                <form id="withdraw-form">
+                    <h3>Withdraw Cash</h3>
+                    <label for="withdraw-amount">Amount to withdraw:</label>
+                    <input type="number" id="withdraw-amount" name="withdraw-amount" min="1" required>
+                    <button type="submit">Withdraw</button>
+                </form>
+            </section>
+        </div>
+    
+        <section class="cash-account">
+            <h2>Your Cash Account</h2>
+            <p>Available Balance: $<span id="cash-balance">2,500</span></p>
+        </section>
+    </main>
+
+    <script>
+        // Example JavaScript to handle deposit and withdrawal
+        const cashBalanceElement = document.getElementById('cash-balance');
+        let cashBalance = parseFloat(cashBalanceElement.textContent); // Assume this balance is fetched from backend
+
+        // Handle deposit
+        document.getElementById('deposit-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const depositAmount = parseFloat(document.getElementById('deposit-amount').value);
+            if (depositAmount > 0) {
+                cashBalance += depositAmount;
+                cashBalanceElement.textContent = cashBalance.toFixed(2);
+                alert('Deposit successful');
+            }
+        });
+
+        // Handle withdrawal
+        document.getElementById('withdraw-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const withdrawAmount = parseFloat(document.getElementById('withdraw-amount').value);
+            if (withdrawAmount > 0 && withdrawAmount <= cashBalance) {
+                cashBalance -= withdrawAmount;
+                cashBalanceElement.textContent = cashBalance.toFixed(2);
+                alert('Withdrawal successful');
+            } else {
+                alert('Insufficient funds or invalid amount');
+            }
+        });
+    </script>
+
+</body>
+</html>
