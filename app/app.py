@@ -1,3 +1,4 @@
+from flask import render_template 
 from flask import Flask, request, jsonify
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
@@ -293,7 +294,31 @@ def trade_stock():
     db.session.commit()
     app.logger.info(f"Trade successful. New user balance: {user.cash_balance}")
     return jsonify({'message': f'Successfully {data["transaction_type"]} {quantity} shares of {stock.ticker}'}), 200
+
+@app.route('/add_admin_user', methods=['POST'])
+def add_admin_user():
+    try:
+        admin_user = User.query.filter_by(username='admin').first()
+        if admin_user:
+            return jsonify({'message': 'Admin user already exists', 'user_id': admin_user.id}), 200
+
+        new_admin = User(
+            username='admin',
+            email='admin@example.com',
+            full_name='Admin User',
+            role='admin',
+            cash_balance=100000.0
+        )
+        new_admin.password_hash = generate_password_hash('adminpassword123')
+        db.session.add(new_admin)
+        db.session.commit()
         
+        return jsonify({'message': 'Admin user created successfully', 'user_id': new_admin.id}), 201
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error adding admin user: {str(e)}")
+        return jsonify({'message': f'Error adding admin user: {str(e)}'}), 500
+
 @app.route('/admin/stocks', methods=['POST'])
 @jwt_required()
 def add_stock():
@@ -439,6 +464,42 @@ def add_test_data():
         db.session.rollback()
         app.logger.error(f"Error adding test data: {str(e)}")
         return jsonify({'message': f'Error adding test data: {str(e)}'}), 500
+
+@app.route('/')
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
+@app.route('/trading')
+def trading():
+    return render_template('trading.html')
+
+@app.route('/portfolio')
+def portfolio():
+    return render_template('portfolio.html')
+
+@app.route('/transaction_history')
+def transaction_history():
+    return render_template('transaction_history.html')
+
+@app.route('/deposit_cash')
+def deposit_cash():
+    return render_template('deposit_cash.html')
+
+@app.route('/withdraw_cash')
+def withdraw_cash():
+    return render_template('withdraw_cash.html')
+
+@app.route('/new_account')
+def new_account():
+    return render_template('new_account.html')
+
+@app.route('/login')
+def login_page():  # Changed from 'login' to 'login_page' because you already have a login route
+    return render_template('login.html')
+
+
+
 
 if __name__ == '__main__':
     with app.app_context():
