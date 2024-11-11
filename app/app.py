@@ -498,6 +498,14 @@ def new_account():
 def login_page():  # Changed from 'login' to 'login_page' because you already have a login route
     return render_template('login.html')
 
+@app.route('/cash_management')
+def cash_management():
+    return render_template('cash_management.html')
+
+@app.route('/submit_trade')
+def submit_trade():
+    return render_template('submit_trade.html')
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create database tables before running the app

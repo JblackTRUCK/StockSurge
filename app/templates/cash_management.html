@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Surge - Transactions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar-links">
+            <li><a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Stock Surge Logo" class="logo" width="160px">
+            </a></li>
+            <li><a href="{{ url_for('trading') }}">Trading</a></li>
+            <li><a href="{{ url_for('portfolio') }}">Portfolio</a></li>
+            <li><a href="{{ url_for('transaction_history') }}">Transaction History</a></li>
+            <li><a href="{{ url_for('deposit_cash') }}">Deposit Cash</a></li>
+            <li><a href="{{ url_for('withdraw_cash') }}">Withdraw Cash</a></li>
+        </ul>
+        <div class="navbar-right">
+            <a href="{{ url_for('login_page') }}" class="nav-link">Log on</a>
+            <a href="{{ url_for('new_account') }}" class="cta-button">Open an account</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="transaction-container">
+            <section class="transaction-history">
+                <h2>Your Transaction History</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Transaction Type</th>
+                            <th>Amount</th>
+                            <th>Stock (if applicable)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example transaction history, this data would be populated dynamically -->
+                        <tr>
+                            <td>10/15/2024</td>
+                            <td>Deposit</td>
+                            <td>$1,000</td>
+                            <td>-</td>
+                            <td>Completed</td>
+                        </tr>
+                        <tr>
+                            <td>10/12/2024</td>
+                            <td>Buy</td>
+                            <td>$500</td>
+                            <td>TSLA</td>
+                            <td>Completed</td>
+                        </tr>
+                        <tr>
+                            <td>10/10/2024</td>
+                            <td>Sell</td>
+                            <td>$800</td>
+                            <td>AAPL</td>
+                            <td>Completed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+    
+            <section class="manage-funds">
+                <h2>Deposit or Withdraw Funds</h2>
+    
+                <!-- Deposit Form -->
+                <form id="deposit-form" action="{{ url_for('deposit_cash') }}" method="POST">
+                    <h3>Deposit Cash</h3>
+                    <label for="deposit-amount">Amount to deposit:</label>
+                    <input type="number" id="deposit-amount" name="deposit-amount" min="1" required>
+                    <button type="submit">Deposit</button>
+                </form>
+    
+                <!-- Withdrawal Form -->
+                <form id="withdraw-form" action="{{ url_for('withdraw_cash') }}" method="POST">
+                    <h3>Withdraw Cash</h3>
+                    <label for="withdraw-amount">Amount to withdraw:</label>
+                    <input type="number" id="withdraw-amount" name="withdraw-amount" min="1" required>
+                    <button type="submit">Withdraw</button>
+                </form>
+            </section>
+        </div>
+    
+        <section class="cash-account">
+            <h2>Your Cash Account</h2>
+            <p>Available Balance: $<span id="cash-balance">2,500</span></p>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/transactions.js') }}"></script>
+
+</body>
+</html>

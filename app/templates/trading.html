@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Surge</title>
-    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <!-- For the logo -->
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Stock Surge Logo" class="logo" width="160px">
 </head>
 <body>
     <nav class="navbar">
   
         <ul class="navbar-links">
-			<li><a href="home.html"><img src="logo2.png" alt="Stock Surge Logo" class="logo" width="160px"></li>
+			<li><a href="home.html"><img src="logo.png" alt="Stock Surge Logo" class="logo" width="160px"></li>
             <li><a href="trading.html">Trading</a></li>
             <li><a href="portfolio.html">Portfolio</a></li>
-            <li><a href="transaction history.html">Transaction History</a></li>
-            <li><a href="deposit cash.html">Deposit Cash</a></li>
-            <li><a href="withdraw cash.html">Withdraw Cash</a></li>
+            <li><a href="cash_management.html">Cash Management</a></li>
         </ul>
         <div class="navbar-right">
             <a href="login.html" class="nav-link">Log on</a>
-            <a href="new account.html" class="cta-button">Open an account</a>
+            <a href="new_account.html" class="cta-button">Open an account</a>
         </div>
     </nav>
 	

@@ -24,18 +24,30 @@
         </div>
     </nav>
 
-    <div class="login-container">
-        <h2>Log In</h2>
-        <form action="{{ url_for('login') }}" method="POST">
+    <div class="account-container">
+        <h2>Create New Account</h2>
+        <form action="{{ url_for('register') }}" method="POST">
+            <label for="first-name">First Name:</label>
+            <input type="text" id="first-name" name="first-name" required>
+
+            <label for="last-name">Last Name:</label>
+            <input type="text" id="last-name" name="last-name" required>
+
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
 
-            <button type="submit" class="login-button">Log In</button>
+            <label for="confirm-password">Confirm Password:</label>
+            <input type="password" id="confirm-password" name="confirm-password" required>
+
+            <button type="submit" class="create-account-button">Create Account</button>
         </form>
-        <p>Don't have an account? <a href="{{ url_for('new_account') }}">Create one here</a>.</p>
+        <p>Already have an account? <a href="{{ url_for('login_page') }}">Log in here</a>.</p>
     </div>
 </body>
 </html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Surge - Transaction History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar-links">
+            <li><a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Stock Surge Logo" class="logo" width="160px">
+            </a></li>
+            <li><a href="{{ url_for('trading') }}">Trading</a></li>
+            <li><a href="{{ url_for('portfolio') }}">Portfolio</a></li>
+            <li><a href="{{ url_for('transaction_history') }}">Transaction History</a></li>
+            <li><a href="{{ url_for('deposit_cash') }}">Deposit Cash</a></li>
+            <li><a href="{{ url_for('withdraw_cash') }}">Withdraw Cash</a></li>
+        </ul>
+        <div class="navbar-right">
+            <a href="{{ url_for('login_page') }}" class="nav-link">Log on</a>
+            <a href="{{ url_for('new_account') }}" class="cta-button">Open an account</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Transaction History</h2>
+        <div class="transaction-list">
+            <!-- This will be populated dynamically -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Stock</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sample data - will be replaced with dynamic data -->
+                    <tr>
+                        <td>2024-11-10</td>
+                        <td>Buy</td>
+                        <td>AAPL</td>
+                        <td>10</td>
+                        <td>$150.00</td>
+                        <td>$1,500.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
