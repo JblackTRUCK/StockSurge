@@ -64,10 +64,12 @@ class Stock(db.Model):
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
-    transaction_type = db.Column(db.String(4), nullable=False)  # 'buy' or 'sell'
-    quantity = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Float, nullable=False)
+    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=True)  # Nullable for deposits
+    transaction_type = db.Column(db.String(10), nullable=False)  # 'buy', 'sell', or 'deposit'
+    quantity = db.Column(db.Integer, nullable=True)  # Nullable for deposits
+    price = db.Column(db.Float, nullable=True)  # Nullable for deposits
+    amount = db.Column(db.Float, nullable=True)  # For deposits
+    payment_method = db.Column(db.String(20), nullable=True)  # For deposits
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 class CashAccount(db.Model):
@@ -151,8 +153,16 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    logger.debug(f"Login attempt for username: {data.get('username')}")
+    
     user = User.query.filter_by(username=data['username']).first()
-    if user and check_password_hash(user.password_hash, data['password']):
+    if not user:
+        logger.warning(f"User not found: {data.get('username')}")
+        return jsonify({'message': 'Invalid username or password'}), 401
+    
+    logger.debug(f"User found: {user.username}, checking password...")
+    if check_password_hash(user.password_hash, data['password']):
+        logger.info(f"Successful login for user: {user.username}")
         if user.is_mfa_enabled:
             temp_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=5))
             return jsonify({"message": "MFA required", "temp_token": temp_token}), 200
@@ -160,9 +170,10 @@ def login():
             access_token = create_access_token(identity=user.id)
             return jsonify(access_token=access_token), 200
     else:
+        logger.warning(f"Invalid password for user: {user.username}")
         return jsonify({'message': 'Invalid username or password'}), 401
 
-@app.route('/portfolio', methods=['GET'])
+@app.route('/api/portfolio', methods=['GET'])
 @jwt_required()
 def get_portfolio():
     try:
@@ -366,6 +377,91 @@ def set_market_hours():
     db.session.commit()
     return jsonify({'message': 'Market hours updated successfully'}), 200
 
+@app.route('/api/deposit', methods=['POST'])
+@jwt_required()
+def process_deposit():
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        
+        data = request.get_json()
+        amount = float(data['amount'])
+        payment_method = data['payment_method']
+        
+        if amount <= 0:
+            return jsonify({'message': 'Invalid deposit amount'}), 400
+            
+        # Update user balance
+        user.cash_balance += amount
+        
+        # Create a transaction record
+        transaction = Transaction(
+            user_id=current_user_id,
+            transaction_type='deposit',
+            amount=amount,
+            payment_method=payment_method
+        )
+        
+        db.session.add(transaction)
+        db.session.commit()
+        
+        logger.info(f"Deposit successful for user {user.username}. Amount: ${amount}, New balance: ${user.cash_balance}")
+        
+        return jsonify({
+            'message': 'Deposit successful',
+            'new_balance': user.cash_balance,
+            'transaction_id': transaction.id
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error processing deposit: {str(e)}")
+        return jsonify({'message': 'Error processing deposit'}), 500
+
+@app.route('/api/withdraw', methods=['POST'])
+@jwt_required()
+def process_withdrawal():
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        
+        data = request.get_json()
+        amount = float(data['amount'])
+        payment_method = data['payment_method']
+        
+        if amount <= 0:
+            return jsonify({'message': 'Invalid withdrawal amount'}), 400
+            
+        if user.cash_balance < amount:
+            return jsonify({'message': 'Insufficient funds'}), 400
+            
+        # Update user balance
+        user.cash_balance -= amount
+        
+        # Create a transaction record
+        transaction = Transaction(
+            user_id=current_user_id,
+            transaction_type='withdraw',
+            amount=amount,
+            payment_method=payment_method
+        )
+        
+        db.session.add(transaction)
+        db.session.commit()
+        
+        logger.info(f"Withdrawal successful for user {user.username}. Amount: ${amount}, New balance: ${user.cash_balance}")
+        
+        return jsonify({
+            'message': 'Withdrawal successful',
+            'new_balance': user.cash_balance,
+            'transaction_id': transaction.id
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error processing withdrawal: {str(e)}")
+        return jsonify({'message': 'Error processing withdrawal'}), 500
+
 @app.route('/admin/market-schedule', methods=['POST', 'PUT'])
 @jwt_required()
 def set_market_schedule():
@@ -414,15 +510,26 @@ def get_user_balance():
 @app.route('/add_test_data', methods=['POST'])
 def add_test_data():
     try:
-        # Find the w0lfgang user
+        # Find or create the w0lfgang user
         w0lfgang_user = User.query.filter_by(username='w0lfgang').first()
         
         if not w0lfgang_user:
-            return jsonify({'message': 'User w0lfgang not found'}), 404
-
-        # Update w0lfgang's balance
-        w0lfgang_user.cash_balance = 100000.0
-        app.logger.info(f"Updated w0lfgang user with ID: {w0lfgang_user.id} and new balance: {w0lfgang_user.cash_balance}")
+            # Create new user with proper password hash
+            w0lfgang_user = User(
+                username='w0lfgang',
+                email='w0lfgang@example.com',
+                full_name='Wolfgang Test',
+                role='user',
+                cash_balance=100000.0,
+                password_hash=generate_password_hash('password123', method='pbkdf2:sha256')
+            )
+            db.session.add(w0lfgang_user)
+            app.logger.info(f"Created new w0lfgang user")
+        else:
+            # Update existing user
+            w0lfgang_user.cash_balance = 100000.0
+            w0lfgang_user.password_hash = generate_password_hash('password123', method='pbkdf2:sha256')
+            app.logger.info(f"Updated existing w0lfgang user with ID: {w0lfgang_user.id}")
 
         # Add some test stocks if they don't exist
         stocks_data = [
@@ -435,31 +542,37 @@ def add_test_data():
             if not stock:
                 stock = Stock(**stock_data)
                 db.session.add(stock)
-                app.logger.info(f"Test stock added: {stock.ticker} with price: {stock.current_price}")
+                app.logger.info(f"Test stock added: {stock.ticker}")
             else:
                 stock.current_price = stock_data['current_price']
                 stock.volume = stock_data['volume']
-                app.logger.info(f"Stock {stock.ticker} updated, new price: {stock.current_price}")
+                app.logger.info(f"Stock {stock.ticker} updated")
             stocks.append(stock)
 
-        db.session.flush()  # This will assign IDs to stocks without committing the transaction
+        db.session.flush()
 
         # Add or update portfolio items for w0lfgang
         for stock in stocks:
             portfolio_item = Portfolio.query.filter_by(user_id=w0lfgang_user.id, stock_id=stock.id).first()
             if portfolio_item:
-                portfolio_item.quantity += 10  # Add 10 more to existing quantity
-                app.logger.info(f"Updated portfolio item for {stock.ticker}, new quantity: {portfolio_item.quantity}")
+                portfolio_item.quantity += 10
+                app.logger.info(f"Updated portfolio item for {stock.ticker}")
             else:
                 new_portfolio_item = Portfolio(user_id=w0lfgang_user.id, stock_id=stock.id, quantity=10)
                 db.session.add(new_portfolio_item)
-                app.logger.info(f"Added new portfolio item for {stock.ticker}, quantity: 10")
+                app.logger.info(f"Added new portfolio item for {stock.ticker}")
 
         # Commit all changes
         db.session.commit()
 
-        # Return a response
-        return jsonify({'message': 'Test data added successfully for w0lfgang', 'user_id': w0lfgang_user.id}), 200
+        return jsonify({
+            'message': 'Test data added successfully',
+            'user': {
+                'id': w0lfgang_user.id,
+                'username': w0lfgang_user.username,
+                'cash_balance': w0lfgang_user.cash_balance
+            }
+        }), 200
     except Exception as e:
         db.session.rollback()
         app.logger.error(f"Error adding test data: {str(e)}")
@@ -470,13 +583,13 @@ def add_test_data():
 def home():
     return render_template('home.html')
 
+@app.route('/portfolio')
+def portfolio_page():
+    return render_template('portfolio.html')
+
 @app.route('/trading')
 def trading():
     return render_template('trading.html')
-
-@app.route('/portfolio')
-def portfolio():
-    return render_template('portfolio.html')
 
 @app.route('/transaction_history')
 def transaction_history():
@@ -490,13 +603,13 @@ def deposit_cash():
 def withdraw_cash():
     return render_template('withdraw_cash.html')
 
+@app.route('/login')
+def login_page():
+    return render_template('login.html')
+
 @app.route('/new_account')
 def new_account():
     return render_template('new_account.html')
-
-@app.route('/login')
-def login_page():  # Changed from 'login' to 'login_page' because you already have a login route
-    return render_template('login.html')
 
 @app.route('/cash_management')
 def cash_management():

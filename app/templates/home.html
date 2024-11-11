@@ -13,53 +13,80 @@
                 <img src="{{ url_for('static', filename='logo.png') }}" alt="Stock Surge Logo" class="logo" width="160px">
             </a></li>
             <li><a href="{{ url_for('trading') }}">Trading</a></li>
-            <li><a href="{{ url_for('portfolio') }}">Portfolio</a></li>
+            <li><a href="{{ url_for('portfolio_page') }}">Portfolio</a></li>
             <li><a href="{{ url_for('transaction_history') }}">Transaction History</a></li>
             <li><a href="{{ url_for('deposit_cash') }}">Deposit Cash</a></li>
             <li><a href="{{ url_for('withdraw_cash') }}">Withdraw Cash</a></li>
         </ul>
-        <div class="navbar-right">
-            <a href="{{ url_for('login') }}" class="nav-link">Log on</a>
-            <a href="{{ url_for('new_account') }}" class="cta-button">Open an account</a>
+        <div class="navbar-right" id="authSection">
+            <!-- Will be populated by JavaScript -->
         </div>
     </nav>
-	
-	
+
     <div class="content">
-        <!-- Page content here -->
-    </div>
-	
-	
-	<div class="container">
-        <!-- Stock display section -->
-        <div class="stock-display">
+        <!-- Your home page content here -->
+        <section class="market-overview">
             <h2>Stock Market Overview</h2>
             <ul>
-                <li><strong>Apple (AAPL):</strong> $145.00 (+1.25%)</li>
-                <li><strong>Google (GOOGL):</strong> $2750.50 (+0.85%)</li>
-                <li><strong>Amazon (AMZN):</strong> $3330.15 (-0.10%)</li>
-                <li><strong>Tesla (TSLA):</strong> $715.60 (+2.40%)</li>
-                <!-- Add more stocks here -->
+                <li>Apple (AAPL): $145.00 (+1.25%)</li>
+                <li>Google (GOOGL): $2750.50 (+0.85%)</li>
+                <li>Amazon (AMZN): $3330.15 (-0.10%)</li>
+                <li>Tesla (TSLA): $715.60 (+2.40%)</li>
             </ul>
-        </div>
-        
-        <!-- Financial news section -->
-        <div class="financial-news">
+        </section>
+
+        <section class="financial-news">
             <h2>Latest Financial News</h2>
-            <div class="news-item">
-                <h3>Market Rallies as Tech Stocks Surge</h3>
-                <p>The stock market rallied today, led by gains in the technology sector...</p>
-            </div>
-            <div class="news-item">
-                <h3>Investors Eye Inflation Data</h3>
-                <p>As inflation concerns grow, investors are looking for key data releases...</p>
-            </div>
-            <div class="news-item">
-                <h3>Federal Reserve Meeting Tomorrow</h3>
-                <p>All eyes are on the Federal Reserve as it prepares to release its latest economic forecast...</p>
-            </div>
-        </div>
+            <!-- News content -->
+        </section>
     </div>
-	
+
+    <script>
+        // Check authentication when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAuthSection();
+        });
+
+        function updateAuthSection() {
+            const token = localStorage.getItem('access_token');
+            const authSection = document.getElementById('authSection');
+            
+            if (token) {
+                authSection.innerHTML = `
+                    <span id="userBalance"></span>
+                    <button onclick="logout()" class="nav-link logout-button">Log out</button>
+                `;
+                fetchUserBalance();
+            } else {
+                authSection.innerHTML = `
+                    <a href="{{ url_for('login_page') }}" class="nav-link">Log on</a>
+                    <a href="{{ url_for('new_account') }}" class="cta-button">Open an account</a>
+                `;
+            }
+        }
+
+        async function fetchUserBalance() {
+            const token = localStorage.getItem('access_token');
+            try {
+                const response = await fetch('/user/balance', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('userBalance').textContent = 
+                        `Balance: $${data.cash_balance.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                }
+            } catch (error) {
+                console.error('Error fetching balance:', error);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            window.location.href = '/login';
+        }
+    </script>
 </body>
 </html>

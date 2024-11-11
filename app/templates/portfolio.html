@@ -1,80 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Surge</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-</head>
-<body>
-    <nav class="navbar">
-        <ul class="navbar-links">
-            <li><a href="{{ url_for('home') }}">
-                <img src="{{ url_for('static', filename='logo.png') }}" alt="Stock Surge Logo" class="logo" width="160px">
-            </a></li>
-            <li><a href="{{ url_for('trading') }}">Trading</a></li>
-            <li><a href="{{ url_for('portfolio') }}">Portfolio</a></li>
-            <li><a href="{{ url_for('transaction_history') }}">Transaction History</a></li>
-            <li><a href="{{ url_for('deposit_cash') }}">Deposit Cash</a></li>
-            <li><a href="{{ url_for('withdraw_cash') }}">Withdraw Cash</a></li>
-        </ul>
-        <div class="navbar-right">
-            <a href="{{ url_for('login_page') }}" class="nav-link">Log on</a>
-            <a href="{{ url_for('new_account') }}" class="cta-button">Open an account</a>
-        </div>
-    </nav>
+{% extends "base.html" %}
+{% block title %}Portfolio - Stock Surge{% endblock %}
+{% block content %}
+<div class="portfolio-container">
+    <h2>Your Portfolio</h2>
+    <div id="portfolioContent">
+        Loading portfolio...
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadPortfolio();
+});
 
-    <main>
-        <section class="portfolio-section">
-            <h1>Your Portfolio</h1>
-            
-            <!-- Portfolio summary -->
-            <div class="portfolio-summary">
-                <h2>Account Summary</h2>
-                <p>Available Cash: <strong>$5,000.00</strong></p>
-            </div>
-            <!-- Portfolio table -->
-            <table class="portfolio-table">
-                <thead>
-                    <tr>
-                        <th>Stock Symbol</th>
-                        <th>Company Name</th>
-                        <th>Shares</th>
-                        <th>Current Price</th>
-                        <th>Total Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>AAPL</td>
-                        <td>Apple Inc.</td>
-                        <td>10</td>
-                        <td>$150.00</td>
-                        <td>$1,500.00</td>
-                    </tr>
-                    <tr>
-                        <td>GOOGL</td>
-                        <td>Alphabet Inc.</td>
-                        <td>5</td>
-                        <td>$2,500.00</td>
-                        <td>$12,500.00</td>
-                    </tr>
-                    <tr>
-                        <td>TSLA</td>
-                        <td>Tesla Inc.</td>
-                        <td>8</td>
-                        <td>$750.00</td>
-                        <td>$6,000.00</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="4"><strong>Total Portfolio Value</strong></td>
-                        <td><strong>$20,000.00</strong></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </section>
-    </main>
-</body>
-</html>
+async function loadPortfolio() {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        window.location.href = '/login';
+        return;
+    }
+
+    try {
+        console.log('Making portfolio request with token:', token); // Debug log
+        const response = await fetch('/api/portfolio', {  // Updated endpoint
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const portfolio = await response.json();
+            console.log('Portfolio data:', portfolio); // Debug log
+            displayPortfolio(portfolio);
+        } else if (response.status === 401) {
+            console.log('Unauthorized - clearing token'); // Debug log
+            localStorage.removeItem('access_token');
+            window.location.href = '/login';
+        } else {
+            throw new Error('Failed to load portfolio');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('portfolioContent').innerHTML = 
+            '<p class="error">Error loading portfolio. Please try again later.</p>';
+    }
+}
+
+function displayPortfolio(portfolio) {
+    if (portfolio.length === 0) {
+        document.getElementById('portfolioContent').innerHTML = 
+            '<p>Your portfolio is empty. Start trading to build your portfolio!</p>';
+        return;
+    }
+
+    let totalValue = 0;
+    const portfolioHtml = portfolio.map(item => {
+        const value = item.quantity * item.current_price;
+        totalValue += value;
+        return `
+            <tr>
+                <td>${item.stock_ticker}</td>
+                <td>${item.quantity}</td>
+                <td>$${item.current_price.toFixed(2)}</td>
+                <td>$${value.toFixed(2)}</td>
+            </tr>
+        `;
+    }).join('');
+
+    document.getElementById('portfolioContent').innerHTML = `
+        <table class="portfolio-table">
+            <thead>
+                <tr>
+                    <th>Stock</th>
+                    <th>Shares</th>
+                    <th>Current Price</th>
+                    <th>Total Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${portfolioHtml}
+                <tr class="total-row">
+                    <td colspan="3"><strong>Total Portfolio Value</strong></td>
+                    <td><strong>$${totalValue.toFixed(2)}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+}
+</script>
+{% endblock %}

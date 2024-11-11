@@ -1,3 +1,4 @@
+/* Global Styles */
 * {
     margin: 0;
     padding: 0;
@@ -11,10 +12,43 @@ body {
     justify-content: center;
 }
 
+/* Global Input Styles */
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
 
+::placeholder {
+    color: #999;
+    font-size: 14px;
+}
 
+/* Common Button Styles */
+.submit-btn, .login-button, .create-account-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #0055ff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
 
-/*nav bar styling */
+.submit-btn:hover,
+.login-button:hover,
+.create-account-button:hover {
+    background-color: #0044cc;
+}
+
+/* Navigation Styles */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -50,7 +84,6 @@ body {
     color: #0055ff;
 }
 
-/* Right section buttons */
 .navbar-right {
     display: flex;
     align-items: center;
@@ -79,26 +112,25 @@ body {
     background-color: #568eff;
 }
 
-
-
-/* Container for the columns */
+/* Home Page Styles */
 .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
     display: flex;
-    justify-content: center; /* Centers the columns horizontally */
-    gap: 40px; /* Adds space between the two columns */
-    margin: 20px;
+    justify-content: center;
+    gap: 40px;
 }
 
-/* Stock display and financial news */
-.stock-display, .financial-news {
+.stock-display,
+.financial-news {
     background-color: #f9f9f9;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    flex-basis: auto; /* Automatically adjusts width based on content */
-    max-width: 400px; /* Limits how wide the boxes can grow */
+    flex-basis: auto;
+    max-width: 400px;
 }
 
-/* Stock display box styling */
 .stock-display {
     background-color: #f0f8ff;
 }
@@ -107,191 +139,186 @@ body {
     margin-bottom: 10px;
 }
 
-
-
-
-/* trading page styling*/
+/* Trading Page Styles */
 .trading-container {
-	max-width: 600px;
-	margin: 100px auto;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px 40px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .trading-container h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    font-size: 24px;
+    color: #333;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 24px;
 }
 
-label {
+.form-group label {
     display: block;
-    margin-bottom: 5px;
-	font-weight: bold;
-}
-
-input[type="text"],
-    input[type="number"] {
-    width: 100%;
-    padding: 10px;
-	border: 1px solid #ddd;
-    border-radius: 5px;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
 }
 
 .radio-group {
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
+    gap: 24px;
+    margin-top: 8px;
 }
 
 .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-weight: normal;
+    cursor: pointer;
 }
 
-.submit-btn {
-    display: block;
-    width: 100%;
-	padding: 10px;
-	background-color: #0055ff;
-	color: white;
-	border: none;
-	border-radius: 5px;
-	font-size: 16px;
-	cursor: pointer;
-}
-
-.submit-btn:hover {
-	background-color: #568eff;
-}
-
-
-
-
-/* login page styling */
-
+/* Login Page Styles */
 .login-container {
-	max-width: 400px;
-	margin: 100px auto;
-	padding: 20px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .login-container h2 {
-	text-align: center;
-	margin-bottom: 20px;
-}
-
-.login-container label {
-	display: block;
-	margin-bottom: 8px;
-	font-weight: bold;
-}
-
-.login-container input[type="text"],
-.login-container input[type="password"] {
-	width: 100%;
-	padding: 10px;
-	margin-bottom: 20px;
-	border: 1px solid #ccc;
-	border-radius: 3px;
-	box-sizing: border-box;
-}
-
-.login-button {
-	width: 100%;
-	padding: 10px;
-	background-color: #007bff;
-	color: white;
-	border: none;
-	border-radius: 3px;
-	cursor: pointer;
-}
-
-.login-button:hover {
-	background-color: #0056b3;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .login-container p {
-	text-align: center;
-	padding-top: 12px;
-	font-size: 12px;
+    text-align: center;
+    padding-top: 12px;
+    font-size: 12px;
 }
 
 .login-container a {
-	color: #007bff;
-	text-decoration: none;
+    color: #0055ff;
+    text-decoration: none;
 }
 
 .login-container a:hover {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
-
-
-
-/* new account page styling */
+/* Account Page Styles */
 .account-container {
-	max-width: 400px;
-	margin: 100px auto;
-	padding: 20px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .account-container h2 {
-	text-align: center;
-	margin-bottom: 20px;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-.account-container label {
-	display: block;
-	margin-bottom: 8px;
-	font-weight: bold;
+/* Portfolio and Transaction Table Styles */
+.portfolio-table,
+.transaction-list table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    min-width: 600px;
 }
 
-.account-container input[type="text"],
-.account-container input[type="password"],
-.account-container input[type="email"] {
-	width: 100%;
-	padding: 10px;
-	margin-bottom: 20px;
-	border: 1px solid #ccc;
-	border-radius: 3px;
-	box-sizing: border-box;
+.portfolio-table th,
+.portfolio-table td,
+.transaction-list th,
+.transaction-list td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
-.create-account-button {
-	width: 100%;
-	padding: 10px;
-	background-color: #007bff;
-	color: white;
-	border: none;
-	border-radius: 3px;
-	cursor: pointer;
+.portfolio-table th,
+.transaction-list th {
+    background-color: #f5f5f5;
+    font-weight: bold;
 }
 
-.create-account-button:hover {
-	background-color: #0056b3;
+.transaction-list {
+    overflow-x: auto;
+    margin: 20px 0;
 }
 
-.account-container p {
-	text-align: center;
-	padding-top: 12px;
-	font-size: 12px;
+.transaction-list tr:hover {
+    background-color: #f8f9fa;
 }
 
-.account-container a {
-	color: #007bff;
-	text-decoration: none;
+.total-row {
+    background-color: #f8f9fa;
+    font-weight: bold;
 }
 
-.account-container a:hover {
-	text-decoration: underline;
+/* User Interface Elements */
+.logout-button {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 16px;
+}
+
+.logout-button:hover {
+    background-color: #cc0000;
+}
+
+#userBalance {
+    margin-right: 16px;
+    font-weight: bold;
+}
+
+/* Error Styles */
+.error {
+    color: #dc3545;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Deposit Page Styles */
+.deposit-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.deposit-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.deposit-container select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.deposit-container select:focus {
+    outline: none;
+    border-color: #0055ff;
 }
