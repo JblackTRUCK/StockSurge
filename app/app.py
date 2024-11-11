@@ -498,9 +498,6 @@ def new_account():
 def login_page():  # Changed from 'login' to 'login_page' because you already have a login route
     return render_template('login.html')
 
-
-
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create database tables before running the app
