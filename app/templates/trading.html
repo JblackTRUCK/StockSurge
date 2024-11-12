@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-
 {% block title %}Stock Surge - Trading{% endblock %}
-
 {% block content %}
 <div class="trading-container">
     <h2>Buy or Sell Stocks</h2>
@@ -17,69 +15,63 @@
                 </label>
             </div>
         </div>
-
         <div class="form-group">
             <label>Stock Ticker:</label>
             <input type="text" id="stock" name="stock" required placeholder="Enter stock ticker (e.g., AAPL)">
         </div>
-
         <div class="form-group">
             <label>Number of Shares:</label>
             <input type="number" id="quantity" name="quantity" min="1" required placeholder="Enter number of shares">
         </div>
-
         <button type="submit" class="submit-btn">Submit Transaction</button>
     </form>
 </div>
 
 <script>
-async function handleTrade(event) {
-    event.preventDefault();
-    
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-        window.location.href = '/login';
-        return;
-    }
-
-    const stock = document.getElementById('stock').value.toUpperCase();
-    const quantity = parseInt(document.getElementById('quantity').value);
-    const transactionType = document.querySelector('input[name="transaction_type"]:checked').value;
-
-    try {
-        const response = await fetch('/trade', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                stock_ticker: stock,
-                quantity: quantity,
-                transaction_type: transactionType
-            })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            alert(`Trade successful! ${data.message}`);
-            // Reset form
-            document.getElementById('tradeForm').reset();
-        } else {
-            alert(data.message || 'Trade failed. Please try again.');
+    async function handleTrade(event) {
+        event.preventDefault();
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while executing the trade. Please try again.');
+        
+        const stock = document.getElementById('stock').value.toUpperCase();
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const transactionType = document.querySelector('input[name="transaction_type"]:checked').value;
+        
+        try {
+            const response = await fetch('/trade', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    stock_ticker: stock,
+                    quantity: quantity,
+                    transaction_type: transactionType
+                })
+            });
+            
+            const data = await response.json();
+            if (response.ok) {
+                alert(`Trade successful! ${data.message}`);
+                document.getElementById('tradeForm').reset();
+            } else {
+                alert(data.message || 'Trade failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while executing the trade. Please try again.');
+        }
     }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-        window.location.href = '/login';
-    }
-});
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            window.location.href = '/login';
+        }
+    });
 </script>
 {% endblock %}

@@ -10,7 +10,7 @@
     <nav class="navbar">
         <ul class="navbar-links">
             <li><a href="{{ url_for('home') }}">
-                <img src="{{ url_for('static', filename='logo.png') }}" alt="Stock Surge Logo" class="logo" width="160px">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Stock Surge Logo" class="logo" width="160px">
             </a></li>
             <li><a href="{{ url_for('trading') }}">Trading</a></li>
             <li><a href="{{ url_for('portfolio_page') }}">Portfolio</a></li>
@@ -22,10 +22,8 @@
             <!-- Will be populated by JavaScript -->
         </div>
     </nav>
-
-    <div class="content">
-        <!-- Your home page content here -->
-        <section class="market-overview">
+    <div class="container">
+        <section class="stock-display">
             <h2>Stock Market Overview</h2>
             <ul>
                 <li>Apple (AAPL): $145.00 (+1.25%)</li>
@@ -37,16 +35,51 @@
 
         <section class="financial-news">
             <h2>Latest Financial News</h2>
-            <!-- News content -->
+            <div id="newsContent">
+                <div class="news-item">
+                    <h3>Market Rallies as Tech Stocks Surge</h3>
+                    <p>The stock market rallied today, led by gains in the technology sector...</p>
+                </div>
+                <div class="news-item">
+                    <h3>Investors Eye Inflation Data</h3>
+                    <p>As inflation concerns grow, investors are looking for key data releases...</p>
+                </div>
+                <div class="news-item">
+                    <h3>Federal Reserve Meeting Tomorrow</h3>
+                    <p>All eyes are on the Federal Reserve as it prepares to release its latest economic forecast...</p>
+                </div>
+            </div>
         </section>
     </div>
 
     <script>
-        // Check authentication when page loads
+        // Existing authentication code...
         document.addEventListener('DOMContentLoaded', function() {
             updateAuthSection();
+            fetchLatestNews();  // Add this line
         });
 
+        // Add this new function for fetching news
+        async function fetchLatestNews() {
+            try {
+                const response = await fetch('https://api.marketaux.com/v1/news/all?symbols=AAPL,GOOGL,TSLA&filter_entities=true&language=en&api_token=YOUR_API_KEY');
+                const data = await response.json();
+                
+                if (data.data && data.data.length > 0) {
+                    const newsContent = document.getElementById('newsContent');
+                    newsContent.innerHTML = data.data.slice(0, 3).map(news => `
+                        <div class="news-item">
+                            <h3>${news.title}</h3>
+                            <p>${news.description}</p>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error fetching news:', error);
+            }
+        }
+
+        // Your existing functions...
         function updateAuthSection() {
             const token = localStorage.getItem('access_token');
             const authSection = document.getElementById('authSection');
@@ -65,28 +98,7 @@
             }
         }
 
-        async function fetchUserBalance() {
-            const token = localStorage.getItem('access_token');
-            try {
-                const response = await fetch('/user/balance', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('userBalance').textContent = 
-                        `Balance: $${data.cash_balance.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-                }
-            } catch (error) {
-                console.error('Error fetching balance:', error);
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('access_token');
-            window.location.href = '/login';
-        }
+        // Rest of your existing code...
     </script>
 </body>
 </html>

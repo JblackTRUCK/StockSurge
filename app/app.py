@@ -121,6 +121,22 @@ def check_token_payload(token):
         return None
 
 # Routes
+
+@app.route('/api/auth/status', methods=['GET'])
+@jwt_required()
+def auth_status():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    return jsonify({
+        'authenticated': True,
+        'user': {
+            'username': user.username,
+            'cash_balance': user.cash_balance
+        }
+    }), 200
+
+
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -225,6 +241,44 @@ def get_transactions():
             'timestamp': transaction.timestamp.isoformat()
         })
     return jsonify(transactions_data), 200
+
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return jsonify({
+        'message': 'The token has expired',
+        'error': 'token_expired'
+    }), 401
+
+@jwt.unauthorized_loader
+def missing_token_callback(error):
+    return jsonify({
+        'message': 'Authentication token is missing',
+        'error': 'authorization_required'
+    }), 401
+
+@app.route('/api/auth/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return jsonify(access_token=access_token)
+
+@app.route('/api/auth/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    # In a more complete implementation, you might want to blacklist the token
+    return jsonify({"message": "Successfully logged out"}), 200
+
+@app.route('/api/auth/check', methods=['GET'])
+def check_auth():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token:
+        return jsonify({"authenticated": False}), 401
+    try:
+        jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=["HS256"])
+        return jsonify({"authenticated": True}), 200
+    except:
+        return jsonify({"authenticated": False}), 401
 
 @app.route('/trade', methods=['POST'])
 @jwt_required()
