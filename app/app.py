@@ -303,21 +303,42 @@ def get_portfolio_value():
 @app.route('/transactions', methods=['GET'])
 @jwt_required()
 def get_transactions():
-    current_user_id = get_jwt_identity()
-    transactions = Transaction.query.filter_by(user_id=current_user_id).order_by(Transaction.timestamp.desc()).all()
-    transactions_data = []
-    for transaction in transactions:
-        stock = Stock.query.get(transaction.stock_id)
-        transactions_data.append({
-            'id': transaction.id,
-            'stock_ticker': stock.ticker,
-            'transaction_type': transaction.transaction_type,
-            'quantity': transaction.quantity,
-            'price': transaction.price,
-            'total_amount': transaction.quantity * transaction.price,
-            'timestamp': transaction.timestamp.isoformat()
-        })
-    return jsonify(transactions_data), 200
+    try:
+        current_user_id = get_jwt_identity()
+        transactions = Transaction.query.filter_by(user_id=current_user_id).order_by(Transaction.timestamp.desc()).all()
+        transactions_data = []
+        
+        for transaction in transactions:
+            transaction_data = {
+                'id': transaction.id,
+                'transaction_type': transaction.transaction_type,
+                'timestamp': transaction.timestamp.isoformat()
+            }
+            
+            # Handle different transaction types
+            if transaction.transaction_type in ['deposit', 'withdraw']:
+                transaction_data.update({
+                    'stock_ticker': 'CASH',
+                    'quantity': None,
+                    'price': None,
+                    'total_amount': transaction.amount
+                })
+            else:
+                stock = Stock.query.get(transaction.stock_id)
+                transaction_data.update({
+                    'stock_ticker': stock.ticker if stock else 'Unknown',
+                    'quantity': transaction.quantity,
+                    'price': transaction.price,
+                    'total_amount': transaction.quantity * transaction.price if transaction.quantity and transaction.price else 0
+                })
+            
+            transactions_data.append(transaction_data)
+        
+        return jsonify(transactions_data), 200
+        
+    except Exception as e:
+        app.logger.error(f"Error fetching transactions: {str(e)}")
+        return jsonify({"error": "Error fetching transactions"}), 500
 
 @jwt.expired_token_loader
 def expired_token_callback(jwt_header, jwt_payload):

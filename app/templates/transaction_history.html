@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-
 {% block title %}Stock Surge - Transaction History{% endblock %}
-
 {% block content %}
 <div class="container">
     <h2>Transaction History</h2>
@@ -35,14 +33,12 @@ async function loadTransactions() {
         window.location.href = '/login';
         return;
     }
-
     try {
         const response = await fetch('/transactions', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-
         if (response.ok) {
             const transactions = await response.json();
             displayTransactions(transactions);
@@ -54,29 +50,47 @@ async function loadTransactions() {
         }
     } catch (error) {
         console.error('Error:', error);
-        document.getElementById('transactionTableBody').innerHTML = 
+        document.getElementById('transactionTableBody').innerHTML =
             '<tr><td colspan="6" class="error">Error loading transactions. Please try again later.</td></tr>';
     }
 }
 
 function displayTransactions(transactions) {
     const tbody = document.getElementById('transactionTableBody');
-    
     if (transactions.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6">No transactions found</td></tr>';
         return;
     }
 
-    tbody.innerHTML = transactions.map(transaction => `
-        <tr>
-            <td>${new Date(transaction.timestamp).toLocaleDateString()}</td>
-            <td>${transaction.transaction_type.toUpperCase()}</td>
-            <td>${transaction.stock_ticker}</td>
-            <td>${transaction.quantity}</td>
-            <td>$${transaction.price.toFixed(2)}</td>
-            <td>$${transaction.total_amount.toFixed(2)}</td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = transactions.map(transaction => {
+        // Format date
+        const date = new Date(transaction.timestamp).toLocaleDateString();
+        
+        // Handle different transaction types
+        if (transaction.transaction_type === 'deposit' || transaction.transaction_type === 'withdraw') {
+            return `
+                <tr>
+                    <td>${date}</td>
+                    <td>${transaction.transaction_type.toUpperCase()}</td>
+                    <td>CASH</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>$${transaction.total_amount ? transaction.total_amount.toFixed(2) : '0.00'}</td>
+                </tr>
+            `;
+        } else {
+            return `
+                <tr>
+                    <td>${date}</td>
+                    <td>${transaction.transaction_type.toUpperCase()}</td>
+                    <td>${transaction.stock_ticker}</td>
+                    <td>${transaction.quantity || '-'}</td>
+                    <td>${transaction.price ? '$' + transaction.price.toFixed(2) : '-'}</td>
+                    <td>${transaction.total_amount ? '$' + transaction.total_amount.toFixed(2) : '-'}</td>
+                </tr>
+            `;
+        }
+    }).join('');
 }
 </script>
 {% endblock %}
