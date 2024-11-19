@@ -27,7 +27,7 @@
             <h2>Stock Market Overview</h2>
             <ul>
                 <li>Apple (AAPL): $145.00 (+1.25%)</li>
-                <li>Google (GOOGL): $2750.50 (+0.85%)</li>
+                <li>Google (GOOG): $2750.50 (+0.85%)</li>
                 <li>Amazon (AMZN): $3330.15 (-0.10%)</li>
                 <li>Tesla (TSLA): $715.60 (+2.40%)</li>
             </ul>
@@ -36,50 +36,14 @@
         <section class="financial-news">
             <h2>Latest Financial News</h2>
             <div id="newsContent">
-                <div class="news-item">
-                    <h3>Market Rallies as Tech Stocks Surge</h3>
-                    <p>The stock market rallied today, led by gains in the technology sector...</p>
-                </div>
-                <div class="news-item">
-                    <h3>Investors Eye Inflation Data</h3>
-                    <p>As inflation concerns grow, investors are looking for key data releases...</p>
-                </div>
-                <div class="news-item">
-                    <h3>Federal Reserve Meeting Tomorrow</h3>
-                    <p>All eyes are on the Federal Reserve as it prepares to release its latest economic forecast...</p>
-                </div>
+                <!-- Will be populated by JavaScript -->
+                <div class="loading">Loading latest news...</div>
             </div>
         </section>
     </div>
 
     <script>
-        // Existing authentication code...
-        document.addEventListener('DOMContentLoaded', function() {
-            updateAuthSection();
-            fetchLatestNews();  // Add this line
-        });
-
-        // Add this new function for fetching news
-        async function fetchLatestNews() {
-            try {
-                const response = await fetch('https://api.marketaux.com/v1/news/all?symbols=AAPL,GOOGL,TSLA&filter_entities=true&language=en&api_token=YOUR_API_KEY');
-                const data = await response.json();
-                
-                if (data.data && data.data.length > 0) {
-                    const newsContent = document.getElementById('newsContent');
-                    newsContent.innerHTML = data.data.slice(0, 3).map(news => `
-                        <div class="news-item">
-                            <h3>${news.title}</h3>
-                            <p>${news.description}</p>
-                        </div>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('Error fetching news:', error);
-            }
-        }
-
-        // Your existing functions...
+        // Authentication section update
         function updateAuthSection() {
             const token = localStorage.getItem('access_token');
             const authSection = document.getElementById('authSection');
@@ -98,7 +62,59 @@
             }
         }
 
-        // Rest of your existing code...
+        // News fetching function
+        async function fetchLatestNews() {
+            try {
+                const response = await fetch('/api/news');
+                const news = await response.json();
+                
+                const newsContent = document.getElementById('newsContent');
+                newsContent.innerHTML = news.map(item => `
+                    <div class="news-item">
+                        <h3>${item.title}</h3>
+                        <p>${item.description}</p>
+                        <small>Source: ${item.source}</small>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                const newsContent = document.getElementById('newsContent');
+                newsContent.innerHTML = '<div class="error">Error loading news. Please try again later.</div>';
+            }
+        }
+
+        // User balance fetching function
+        async function fetchUserBalance() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/user/balance', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('userBalance').textContent = 
+                        `Balance: $${data.cash_balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                }
+            } catch (error) {
+                console.error('Error fetching balance:', error);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('access_token');
+            updateAuthSection();
+            window.location.href = '/';
+        }
+
+        // Initialize everything when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAuthSection();
+            fetchLatestNews();  // Initial news fetch
+            setInterval(fetchLatestNews, 10000);  // Refresh news every 10 seconds
+        });
     </script>
 </body>
 </html>

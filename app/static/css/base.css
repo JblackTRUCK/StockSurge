@@ -205,7 +205,8 @@ select {
 .trading-container,
 .login-container,
 .account-container,
-.deposit-container {
+.deposit-container,
+.withdraw-container {
     width: 100%;
     max-width: 1200px;
     margin: 20px auto;
@@ -216,6 +217,13 @@ select {
     position: relative;
     z-index: 10;
 }
+
+.withdraw-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+}
+
 
 /* Form Layout */
 .form-group {
@@ -341,4 +349,39 @@ select {
     to {
         transform: rotate(360deg);
     }
+}
+/* Portfolio Container Specific Styles */
+.portfolio-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 10;
+}
+
+.portfolio-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+}
+
+/* Portfolio Table Hover Effects */
+.portfolio-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.portfolio-table .total-row td {
+    border-top: 2px solid #ddd;
+}
+
+/* Loading State */
+#portfolioContent:empty,
+#portfolioContent:contains("Loading portfolio...") {
+    text-align: center;
+    padding: 20px;
+    color: #666;
 }

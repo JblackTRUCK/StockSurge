@@ -5,6 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
+import feedparser
+import random
 from flask_jwt_extended import (
     JWTManager, create_access_token, jwt_required, 
     get_jwt_identity, decode_token
@@ -135,7 +137,82 @@ def auth_status():
         }
     }), 200
 
-
+# Move this route to be with the other routes, before if __name__ == '__main__':
+@app.route('/api/news')
+def get_news():
+    try:
+        feeds = [
+            "https://www.marketwatch.com/site/rss",
+            "https://www.cnbc.com/id/10001147/device/rss/rss.html",
+            "https://finance.yahoo.com/news/rssindex"
+        ]
+        
+        all_entries = []
+        for feed_url in feeds:
+            feed = feedparser.parse(feed_url)
+            for entry in feed.entries[:5]:  # Get first 5 entries from each feed
+                # Try different possible field names for description
+                description = None
+                if hasattr(entry, 'description'):
+                    description = entry.description
+                elif hasattr(entry, 'summary'):
+                    description = entry.summary
+                elif hasattr(entry, 'content'):
+                    description = entry.content[0].value if isinstance(entry.content, list) else entry.content
+                
+                if description:
+                    all_entries.append({
+                        'title': entry.title,
+                        'description': description[:150] + '...' if len(description) > 150 else description,
+                        'source': feed.feed.title if hasattr(feed.feed, 'title') else 'Financial News'
+                    })
+        
+        # Make sure we have at least one entry
+        if not all_entries:
+            # Provide fallback news items
+            all_entries = [
+                {
+                    'title': 'Markets Update',
+                    'description': 'Stay tuned for the latest market updates and financial news.',
+                    'source': 'Stock Surge'
+                },
+                {
+                    'title': 'Trading News',
+                    'description': 'Market analysis and trading insights coming soon.',
+                    'source': 'Stock Surge'
+                },
+                {
+                    'title': 'Financial Headlines',
+                    'description': 'Latest financial headlines and market movements.',
+                    'source': 'Stock Surge'
+                }
+            ]
+        
+        # Randomly select 3 entries
+        selected_entries = random.sample(all_entries, min(3, len(all_entries)))
+        return jsonify(selected_entries)
+        
+    except Exception as e:
+        app.logger.error(f"Error fetching news: {str(e)}")
+        # Return fallback news items on error
+        fallback_news = [
+            {
+                'title': 'Markets Update',
+                'description': 'Stay tuned for the latest market updates and financial news.',
+                'source': 'Stock Surge'
+            },
+            {
+                'title': 'Trading News',
+                'description': 'Market analysis and trading insights coming soon.',
+                'source': 'Stock Surge'
+            },
+            {
+                'title': 'Financial Headlines',
+                'description': 'Latest financial headlines and market movements.',
+                'source': 'Stock Surge'
+            }
+        ]
+        return jsonify(fallback_news)
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -588,7 +665,7 @@ def add_test_data():
         # Add some test stocks if they don't exist
         stocks_data = [
             {'ticker': 'AAPL', 'company_name': 'Apple Inc.', 'current_price': 150.0, 'volume': 1000000},
-            {'ticker': 'GOOGL', 'company_name': 'Alphabet Inc.', 'current_price': 2800.0, 'volume': 500000}
+            {'ticker': 'GOOG', 'company_name': 'Alphabet Inc.', 'current_price': 2800.0, 'volume': 500000}
         ]
         stocks = []
         for stock_data in stocks_data:
@@ -677,3 +754,5 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create database tables before running the app
     app.run(debug=True)
+
+
