@@ -95,6 +95,87 @@ class MarketSchedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     trading_days = db.Column(db.String(50), nullable=False)  # Comma-separated list of days
 
+import random
+from datetime import datetime, timedelta
+
+class StockPriceSimulator:
+    def __init__(self, base_price, volatility=0.02):
+        self.base_price = base_price
+        self.volatility = volatility
+        self.reset_daily_values()
+        
+    def reset_daily_values(self):
+        # Set opening price with some overnight movement
+        self.opening_price = self.base_price * (1 + random.uniform(-self.volatility, self.volatility))
+        self.current_price = self.opening_price
+        self.high = self.opening_price
+        self.low = self.opening_price
+        self.volume = 0
+        
+    def generate_new_price(self):
+        # Simulate price movement
+        price_change = self.current_price * random.uniform(-self.volatility, self.volatility)
+        self.current_price += price_change
+        
+        # Update high and low
+        self.high = max(self.high, self.current_price)
+        self.low = min(self.low, self.current_price)
+        
+        # Generate realistic volume
+        self.volume += random.randint(1000, 10000)
+        
+        # Calculate market cap (assuming 1B shares outstanding)
+        self.market_cap = self.current_price * 1_000_000_000
+        
+        return {
+            'price': round(self.current_price, 2),
+            'open': round(self.opening_price, 2),
+            'high': round(self.high, 2),
+            'low': round(self.low, 2),
+            'volume': self.volume,
+            'market_cap': round(self.market_cap, 2)
+        }
+
+# Example stock data dictionary
+STOCK_DATA = {
+    'AAPL': {'base_price': 150.00, 'volatility': 0.01},
+    'GOOGL': {'base_price': 2800.00, 'volatility': 0.015},
+    'TSLA': {'base_price': 350.00, 'volatility': 0.03},
+    'AMZN': {'base_price': 3300.00, 'volatility': 0.02},
+    'MSFT': {'base_price': 280.00, 'volatility': 0.01}
+}
+
+# Create simulators for each stock
+stock_simulators = {
+    ticker: StockPriceSimulator(data['base_price'], data['volatility'])
+    for ticker, data in STOCK_DATA.items()
+}
+
+def get_current_stock_data():
+    """Get current simulated data for all stocks"""
+    return {
+        ticker: simulator.generate_new_price()
+        for ticker, simulator in stock_simulators.items()
+    }
+
+# Add this route to your Flask app
+@app.route('/api/stock-data', methods=['GET'])
+def get_stock_data():
+    return jsonify(get_current_stock_data())
+
+
+@app.route('/api/stocks', methods=['GET'])
+def get_stocks():
+    try:
+        stocks = Stock.query.all()
+        stock_tickers = [stock.ticker for stock in stocks]
+        return jsonify({'stock_tickers': stock_tickers}), 200
+    except Exception as e:
+        app.logger.error(f"Error fetching stocks: {str(e)}")
+        return jsonify({'error': 'Error fetching stock tickers'}), 500
+
+
+
 # Helper functions
 def role_required(role):
     def wrapper(fn):
@@ -133,7 +214,8 @@ def auth_status():
         'authenticated': True,
         'user': {
             'username': user.username,
-            'cash_balance': user.cash_balance
+            'cash_balance': user.cash_balance,
+            'role': user.role  # Added this line
         }
     }), 200
 
@@ -482,6 +564,32 @@ def add_admin_user():
         app.logger.error(f"Error adding admin user: {str(e)}")
         return jsonify({'message': f'Error adding admin user: {str(e)}'}), 500
 
+
+@app.route('/debug/check_user/<int:user_id>', methods=['GET'])
+def debug_check_user(user_id):
+    user = User.query.get(user_id)
+    if user:
+        return jsonify({
+            'id': user.id,
+            'username': user.username,
+            'role': user.role,
+            'email': user.email
+        })
+    return jsonify({'error': 'User not found'}), 404
+
+@app.route('/admin/add-stock')
+def admin_add_stock_page():
+    return render_template('add_stock.html')
+
+@app.route('/admin/market-hours')
+def admin_market_hours_page():
+    return render_template('market_hours.html')
+
+@app.route('/admin/market-schedule-page')
+def admin_market_schedule_page():
+    return render_template('market_schedule.html')
+
+
 @app.route('/admin/stocks', methods=['POST'])
 @jwt_required()
 def add_stock():
@@ -773,7 +881,21 @@ def submit_trade():
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Create database tables before running the app
-    app.run(debug=True)
-
-
+        db.create_all()  # Create database tables
+        
+        # Check if admin user exists, if not create it
+        admin_user = User.query.filter_by(username='admin').first()
+        if not admin_user:
+            new_admin = User(
+                username='admin',
+                email='admin@example.com',
+                full_name='Admin User',
+                role='admin',
+                cash_balance=100000.0,
+                password_hash=generate_password_hash('adminpassword123')
+            )
+            db.session.add(new_admin)
+            db.session.commit()
+            print("Admin user created successfully")
+        
+    app.run(host='0.0.0.0', port=8080, debug=True)

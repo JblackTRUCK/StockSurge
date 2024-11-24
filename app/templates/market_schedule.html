@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Market Schedule - Stock Surge</title>
+    <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold mb-6 text-center">Set Trading Days</h2>
+            
+            <div id="message" class="mb-4 hidden">
+                <div class="p-4 rounded-md"></div>
+            </div>
+
+            <form id="marketScheduleForm" class="space-y-4">
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="monday" name="trading_days" value="Monday" class="h-4 w-4 text-blue-600">
+                        <label for="monday" class="ml-2 block text-sm text-gray-900">Monday</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="tuesday" name="trading_days" value="Tuesday" class="h-4 w-4 text-blue-600">
+                        <label for="tuesday" class="ml-2 block text-sm text-gray-900">Tuesday</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="wednesday" name="trading_days" value="Wednesday" class="h-4 w-4 text-blue-600">
+                        <label for="wednesday" class="ml-2 block text-sm text-gray-900">Wednesday</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="thursday" name="trading_days" value="Thursday" class="h-4 w-4 text-blue-600">
+                        <label for="thursday" class="ml-2 block text-sm text-gray-900">Thursday</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="friday" name="trading_days" value="Friday" class="h-4 w-4 text-blue-600">
+                        <label for="friday" class="ml-2 block text-sm text-gray-900">Friday</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="saturday" name="trading_days" value="Saturday" class="h-4 w-4 text-blue-600">
+                        <label for="saturday" class="ml-2 block text-sm text-gray-900">Saturday</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="sunday" name="trading_days" value="Sunday" class="h-4 w-4 text-blue-600">
+                        <label for="sunday" class="ml-2 block text-sm text-gray-900">Sunday</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">
+                    Update Trading Days
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Fetch current schedule when page loads
+        async function fetchCurrentSchedule() {
+            try {
+                const response = await fetch('/admin/market-schedule', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const days = data.trading_days.split(',');
+                    days.forEach(day => {
+                        const checkbox = document.getElementById(day.toLowerCase());
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching schedule:', error);
+            }
+        }
+
+        document.getElementById('marketScheduleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const checkboxes = document.querySelectorAll('input[name="trading_days"]:checked');
+            const trading_days = Array.from(checkboxes).map(cb => cb.value);
+
+            try {
+                const response = await fetch('/admin/market-schedule', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    },
+                    body: JSON.stringify({ trading_days })
+                });
+                
+                const data = await response.json();
+                const messageDiv = document.getElementById('message');
+                messageDiv.classList.remove('hidden');
+                
+                if (response.ok) {
+                    messageDiv.firstElementChild.className = 'p-4 rounded-md bg-green-100 text-green-700';
+                    messageDiv.firstElementChild.textContent = data.message;
+                } else {
+                    messageDiv.firstElementChild.className = 'p-4 rounded-md bg-red-100 text-red-700';
+                    messageDiv.firstElementChild.textContent = data.message;
+                }
+            } catch (error) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.classList.remove('hidden');
+                messageDiv.firstElementChild.className = 'p-4 rounded-md bg-red-100 text-red-700';
+                messageDiv.firstElementChild.textContent = 'Error connecting to server';
+            }
+        });
+
+        // Load current schedule when page loads
+        document.addEventListener('DOMContentLoaded', fetchCurrentSchedule);
+    </script>
+    {% endblock %}
+</body>
+</html>

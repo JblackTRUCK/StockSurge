@@ -18,6 +18,17 @@
             <li><a href="{{ url_for('transaction_history') }}">Transaction History</a></li>
             <li><a href="{{ url_for('deposit_cash') }}">Deposit Cash</a></li>
             <li><a href="{{ url_for('withdraw_cash') }}">Withdraw Cash</a></li>
+            
+            <!-- Admin Links - Will only show for admin users -->
+            <li class="admin-links" style="display: none;">
+                <a href="{{ url_for('admin_market_schedule_page') }}">Update Trading Days</a>
+            </li>
+            <li class="admin-links" style="display: none;">
+                <a href="{{ url_for('admin_add_stock_page') }}">Add New Stock</a>
+            </li>
+            <li class="admin-links" style="display: none;">
+                <a href="{{ url_for('admin_market_hours_page') }}">Update Market Hours</a>
+            </li>
         </ul>
         <div class="navbar-right" id="authSection">
             <!-- Will be populated by JavaScript -->
@@ -29,15 +40,10 @@
     </div>
 
     <script>
-        // Check authentication when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            updateAuthSection();
-        });
-
-        function updateAuthSection() {
+     
+         function updateAuthSection() {
             const token = localStorage.getItem('access_token');
             const authSection = document.getElementById('authSection');
-            
             if (token) {
                 authSection.innerHTML = `
                     <span id="userBalance"></span>
@@ -49,6 +55,29 @@
                     <a href="{{ url_for('login_page') }}" class="nav-link">Log on</a>
                     <a href="{{ url_for('new_account') }}" class="cta-button">Open an account</a>
                 `;
+            }
+        }
+
+        function checkAdminStatus() {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                fetch('/api/auth/status', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.user && data.user.role === 'admin') {
+                        const adminLinks = document.querySelectorAll('.admin-links');
+                        adminLinks.forEach(link => {
+                            link.style.display = 'inline-block';
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking admin status:', error);
+                });
             }
         }
 
@@ -70,10 +99,16 @@
             }
         }
 
-        function logout() {
+function logout() {
             localStorage.removeItem('access_token');
             window.location.href = '/login';
         }
+
+        // Add this event listener
+        document.addEventListener('DOMContentLoaded', function () {
+            updateAuthSection();
+            checkAdminStatus();
+        });
     </script>
     {% block extra_js %}{% endblock %}
 </body>

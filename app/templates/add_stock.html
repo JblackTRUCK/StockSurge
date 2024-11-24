@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Stock - Stock Surge</title>
+    <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold mb-6 text-center">Add New Stock</h2>
+            
+            <div id="message" class="mb-4 hidden">
+                <div class="p-4 rounded-md"></div>
+            </div>
+
+            <form id="stockForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Stock Ticker</label>
+                    <input type="text" name="ticker" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Company Name</label>
+                    <input type="text" name="company_name" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Current Price</label>
+                    <input type="number" name="current_price" step="0.01" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Volume</label>
+                    <input type="number" name="volume" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">
+                    Add Stock
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('stockForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const stockData = {
+                ticker: formData.get('ticker').toUpperCase(),
+                company_name: formData.get('company_name'),
+                current_price: parseFloat(formData.get('current_price')),
+                volume: parseInt(formData.get('volume'))
+            };
+
+            try {
+                const response = await fetch('/admin/stocks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`  // Changed to access_token to match your base template
+                    },
+                    body: JSON.stringify(stockData)
+                });
+                
+                const data = await response.json();
+                const messageDiv = document.getElementById('message');
+                messageDiv.classList.remove('hidden');
+                
+                if (response.ok) {
+                    messageDiv.firstElementChild.className = 'p-4 rounded-md bg-green-100 text-green-700';
+                    messageDiv.firstElementChild.textContent = data.message;
+                    e.target.reset();
+                } else {
+                    messageDiv.firstElementChild.className = 'p-4 rounded-md bg-red-100 text-red-700';
+                    messageDiv.firstElementChild.textContent = data.message;
+                }
+            } catch (error) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.classList.remove('hidden');
+                messageDiv.firstElementChild.className = 'p-4 rounded-md bg-red-100 text-red-700';
+                messageDiv.textContent = 'Error connecting to server';
+            }
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>

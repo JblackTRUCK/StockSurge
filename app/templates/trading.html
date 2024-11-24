@@ -30,16 +30,22 @@
 <script>
     async function handleTrade(event) {
         event.preventDefault();
+        const stock = document.getElementById('stock').value.toUpperCase();
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const transactionType = document.querySelector('input[name="transaction_type"]:checked').value;
+
+        // Display confirmation dialog
+        const confirmation = confirm(`You are about to ${transactionType} ${quantity} shares of ${stock}. Are you sure?`);
+        if (!confirmation) {
+            return; // Exit if the user cancels
+        }
+
         const token = localStorage.getItem('access_token');
         if (!token) {
             window.location.href = '/login';
             return;
         }
-        
-        const stock = document.getElementById('stock').value.toUpperCase();
-        const quantity = parseInt(document.getElementById('quantity').value);
-        const transactionType = document.querySelector('input[name="transaction_type"]:checked').value;
-        
+
         try {
             const response = await fetch('/trade', {
                 method: 'POST',
@@ -53,7 +59,7 @@
                     transaction_type: transactionType
                 })
             });
-            
+
             const data = await response.json();
             if (response.ok) {
                 alert(`Trade successful! ${data.message}`);
@@ -66,7 +72,7 @@
             alert('An error occurred while executing the trade. Please try again.');
         }
     }
-    
+
     document.addEventListener('DOMContentLoaded', function() {
         const token = localStorage.getItem('access_token');
         if (!token) {
