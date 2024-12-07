@@ -18,7 +18,6 @@
             <li><a href="{{ url_for('transaction_history') }}">Transaction History</a></li>
             <li><a href="{{ url_for('deposit_cash') }}">Deposit Cash</a></li>
             <li><a href="{{ url_for('withdraw_cash') }}">Withdraw Cash</a></li>
-            
             <!-- Admin Links - Will only show for admin users -->
             <li class="admin-links" style="display: none;">
                 <a href="{{ url_for('admin_market_schedule_page') }}">Update Trading Days</a>
@@ -34,14 +33,12 @@
             <!-- Will be populated by JavaScript -->
         </div>
     </nav>
-
-    <div class="content">
+    <main class="main-wrapper">
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
     <script>
-     
-         function updateAuthSection() {
+        function updateAuthSection() {
             const token = localStorage.getItem('access_token');
             const authSection = document.getElementById('authSection');
             if (token) {
@@ -55,6 +52,24 @@
                     <a href="{{ url_for('login_page') }}" class="nav-link">Log on</a>
                     <a href="{{ url_for('new_account') }}" class="cta-button">Open an account</a>
                 `;
+            }
+        }
+
+        async function fetchUserBalance() {
+            const token = localStorage.getItem('access_token');
+            try {
+                const response = await fetch('/user/balance', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('userBalance').textContent = 
+                        `Balance: $${data.cash_balance.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                }
+            } catch (error) {
+                console.error('Error fetching balance:', error);
             }
         }
 
@@ -81,31 +96,13 @@
             }
         }
 
-        async function fetchUserBalance() {
-            const token = localStorage.getItem('access_token');
-            try {
-                const response = await fetch('/user/balance', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('userBalance').textContent = 
-                        `Balance: $${data.cash_balance.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-                }
-            } catch (error) {
-                console.error('Error fetching balance:', error);
-            }
-        }
-
-function logout() {
+        function logout() {
             localStorage.removeItem('access_token');
             window.location.href = '/login';
         }
 
-        // Add this event listener
-        document.addEventListener('DOMContentLoaded', function () {
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
             updateAuthSection();
             checkAdminStatus();
         });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -46,45 +47,54 @@ const StockDisplay = () => {
           <TabsTrigger value="charts">Charts</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="stocks">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {stockData.map((stock) => (
-              <Card key={stock.symbol} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="flex justify-between items-center">
-                    <span>{stock.symbol}</span>
-                    {getStockTrend(stock)}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-1" />
-                        <span>Price</span>
-                      </div>
-                      <span className="font-bold">${stock.price.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <Activity className="w-4 h-4 mr-1" />
-                        <span>Volume</span>
-                      </div>
-                      <span>{stock.volume.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <BarChart3 className="w-4 h-4 mr-1" />
-                        <span>Market Cap</span>
-                      </div>
-                      <span>${(stock.market_cap / 1e9).toFixed(2)}B</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
+        <div className="space-y-4">
+  <Tabs defaultValue="stocks" className="w-full">
+    <TabsList>
+      <TabsTrigger value="stocks">Stocks</TabsTrigger>
+      <TabsTrigger value="charts">Charts</TabsTrigger>
+    </TabsList>
+
+    <TabsContent value="stocks">
+      <div className="flex flex-col gap-6">
+        {stockData.map((stock) => (
+          <Card
+            key={stock.symbol}
+            className="p-4 shadow-md border border-gray-300 bg-white hover:shadow-lg transition-shadow"
+          >
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-bold">{stock.symbol}</h3>
+              <span
+                className={`text-sm font-semibold ${
+                  stock.price_change >= 0 ? 'text-green-500' : 'text-red-500'
+                }`}
+              >
+                {stock.price_change >= 0 ? '+' : ''}
+                {stock.price_change.toFixed(2)}%
+              </span>
+            </div>
+            <div className="mt-2">
+              <p className="text-sm">
+                <strong>Price:</strong> ${stock.price.toFixed(2)}
+              </p>
+              <p className="text-sm">
+                <strong>Volume:</strong> {stock.volume.toLocaleString()}
+              </p>
+              <p className="text-sm">
+                <strong>Market Cap:</strong> ${(
+                  stock.market_cap / 1e9
+                ).toFixed(2)}B
+              </p>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </TabsContent>
+
+    <TabsContent value="charts">
+      {/* Existing "Charts" code */}
+    </TabsContent>
+  </Tabs>
+</div>
 
         <TabsContent value="charts">
           <Card>
